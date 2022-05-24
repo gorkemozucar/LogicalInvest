@@ -1,0 +1,302 @@
+{% extends 'indicators/index.html' %}
+{% load static %}
+
+{% block title %}{{data.symbol}} {{data.price}}{% endblock %}
+
+{% block content %}
+
+{% include 'indicators/topcrypto.html'%}
+
+
+<div class="container-fluid">
+      <div class="justify-content-center mt-3">
+        <div class="card">
+          <div class="card-body">
+            <form method="POST" action="">{% csrf_token %}
+            <div class="input-group" style="display: inline">
+                <label>For </label>
+
+              <select id="interval" name="interval">
+                <option value="1m">1 minute</option>
+                <option value="3m">3 minutes</option>
+                <option value="5m">5 minutes</option>
+                <option value="15m">15 minutes</option>
+                <option value="30m">30 minutes</option>
+                <option value="1h">1 hour</option>
+                <option value="2h">2 hours</option>
+                <option value="4h">4 hours</option>
+                <option value="6h">6 hours</option>
+                <option value="8h">8 hours</option>
+                <option value="12h">12 hours</option>
+                <option value="1d">1 day</option>
+                <option value="3d">3 day</option>
+                <option value="1w">1 week</option>
+                <option value="1M">1 month</option>
+              </select>
+
+                <label> interval, calculate the accuracy starting from </label>
+
+              <select name="starting_time">
+                  <option value="48">2 days ago</option>
+                  <option value="120">5 days ago</option>
+                  <option value="2160">3 months ago</option>
+                  <option value="8640">1 year ago</option>
+                  <option value="17280">2 years ago</option>
+                  <option value="34560">4 years ago</option>
+              </select>
+            </div>
+
+            <div class="card justify-content-center mt-3" style="display: inline">
+              <input class="btn-primary btn-lg" type="submit" value="View the results!">
+<!--                <button type="submit" class="btn btn-primary mb-2">Submit</button>-->
+            </div>
+          </form>
+          </div>
+      </div>
+      </div>
+  <div class="row mb-5 justify-content-center">
+    <div class="col-sm-3 col-md-3 col-xs-12 py-5">
+      <div class="card">
+        <div class="card-header"> Crypto Spot Quote</div>
+        <div class="card-body">
+          <hr>
+          {% if data %}
+          <div class="alert alert-success text-center" role="alert">
+            <span>{{data.symbol}} @ {{data.price}}</span>
+          </div>
+          {% else %}
+          <br>
+          {% endif %}
+          <hr>
+
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-success">Quick Info</li>
+            <li class="list-group-item list-group-item-success">High: {{moredata.highPrice}} </li>
+            <li class="list-group-item list-group-item-success">Low: {{moredata.lowPrice}}</li>
+            <li class="list-group-item list-group-item-success">Volume: {{moredata.volume}} </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 col-md-9 col-xs-12 py-5">
+      <div class="card text-center">
+        <div class="alert alert-success" role="alert">
+          <span>{{data.symbol}}</span>
+        </div>
+
+        <div class="card mx-auto py-3">
+          {{ plot | safe }}
+        </div>
+        <br>
+        <br>
+<!--        <div id="chart" class="card mx-auto py-3"></div>-->
+        <br>
+        <br>
+        <div class="card text-center mb-5 mx-5">
+        <h3 class="my-3">Indicators and Accuracies</h3>
+          <div class="table-responsive">
+              <table id="accuracy" class="table table-hover table-sm text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">Indicator</th>
+                        <th scope="col">Accuracy</th>
+                        <th scope="col">Signal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-bbands' %}">{{ bbands }}</a></th>
+                        <td>{{ bb_accuracy }}</td>
+                        <td>{{ bb_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-rsi' %}">{{ rsi }}</a></th>
+                        <td>{{ rsi_accuracy }}</td>
+                        <td>{{ rsi_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-supertrend' %}">{{ supertrend }}</a></th>
+                        <td>{{ supertrend_accuracy }}</td>
+                        <td>{{ supertrend_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-macd' %}">{{ macd }}</a></th>
+                        <td>{{ macd_accuracy }}</td>
+                        <td>{{ macd_signal }}</td>
+
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-williams_r_percent' %}">{{ williams_r_percentage }}</a></th>
+                        <td>{{ williams_r_accuracy }}</td>
+                        <td>{{ williams_r_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-sma' %}">{{ sma }}</a></th>
+                        <td>{{ sma_accuracy }}</td>
+                        <td>{{ sma_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-stochastic' %}">{{ stochastic }}</a></th>
+                        <td>{{ stoch_accuracy }}</td>
+                        <td>{{ stoch_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-cci' %}">{{ cci }}</a></th>
+                        <td>{{ cci_accuracy }}</td>
+                        <td>{{ cci_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-adx' %}">{{ adx }}</a></th>
+                        <td>{{ adx_accuracy }}</td>
+                        <td>{{ adx_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-aroon' %}">{{ aroon }}</a></th>
+                        <td>{{ aroon_accuracy }}</td>
+                        <td>{{ aroon_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-kc' %}">{{ kc }}</a></th>
+                        <td>{{ kc_accuracy }}</td>
+                        <td>{{ kc_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-tsi' %}">{{ tsi }}</a></th>
+                        <td>{{ tsi_accuracy }}</td>
+                        <td>{{ tsi_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-ao' %}">{{ ao }}</a></th>
+                        <td>{{ ao_accuracy }}</td>
+                        <td>{{ ao_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-coppock' %}">{{ coppock }}</a></th>
+                        <td>{{ coppock_accuracy }}</td>
+                        <td>{{ coppock_signal }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><a href="{% url 'indicators-kst' %}">{{ kst }}</a></th>
+                        <td>{{ kst_accuracy }}</td>
+                        <td>{{ kst_signal }}</td>
+                    </tr>
+                </tbody>
+              </table>
+            </div>
+      </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+        var candle_data = {{ candle_data | safe }};
+        var chart = LightweightCharts.createChart(document.getElementById('chart'), {
+        width: 1000,
+        height: 500,
+        layout: {
+            backgroundColor: '#ffffff',
+            textColor: 'rgba(0, 0, 0)',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        priceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    });
+
+    var candleSeries = chart.addCandlestickSeries({
+        upColor: '#00ff00',
+        downColor: '#ff0000',
+        borderDownColor: 'rgba(255, 144, 0, 1)',
+        borderUpColor: 'rgba(255, 144, 0, 1)',
+        wickDownColor: 'rgba(255, 144, 0, 1)',
+        wickUpColor: 'rgba(255, 144, 0, 1)',
+    });
+
+    console.log(candle_data);
+    candleSeries.setData(candle_data);
+
+    var selectedValue = document.getElementById("interval").value;
+
+    var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_"+selectedValue);
+    console.log(binanceSocket);
+
+    binanceSocket.onmessage = function (event) {
+        var message = JSON.parse(event.data);
+
+        var candlestick = message.k;
+
+        candleSeries.update({
+            time: candlestick.t / 1000,
+            open: candlestick.o,
+            high: candlestick.h,
+            low: candlestick.l,
+            close: candlestick.c
+        })
+    }
+</script>
+<script>
+    function sortTable() {
+      var table, rows, switching, i, x, y, shouldSwitch;
+      table = document.getElementById("accuracy");
+      switching = true;
+      /* Make a loop that will continue until
+      no switching has been done: */
+      while (switching) {
+        // Start by saying: no switching is done:
+        switching = false;
+        rows = table.rows;
+        /* Loop through all table rows (except the
+        first, which contains table headers): */
+        for (i = 1; i < (rows.length - 1); i++) {
+          // Start by saying there should be no switching:
+          shouldSwitch = false;
+          /* Get the two elements you want to compare,
+          one from current row and one from the next: */
+          x = rows[i].getElementsByTagName("TD")[0];
+          y = rows[i + 1].getElementsByTagName("TD")[0];
+          // Check if the two rows should switch place:
+          if (Number(x.innerHTML) < Number(y.innerHTML)) {
+            // If so, mark as a switch and break the loop:
+              shouldSwitch = true;
+              break;
+            }
+        }
+        if (shouldSwitch) {
+          /* If a switch has been marked, make the switch
+          and mark that a switch has been done: */
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+    }
+    sortTable();
+</script>
+
+<script>
+  function myrefresh() {
+    window.location.reload();
+  }
+  setTimeout('myrefresh()', 59000);
+</script>
+
+{%endblock%}

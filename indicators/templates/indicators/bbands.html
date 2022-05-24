@@ -1,0 +1,166 @@
+{% extends 'indicators/index.html' %}
+{% load static %}
+
+{% block title %}{{data.symbol}} {{data.price}}{% endblock %}
+
+
+
+
+{% block content %}
+
+{% include 'indicators/topcrypto.html'%}
+
+
+<div class="container-fluid">
+
+  <div class="row mb-5 justify-content-center">
+    <div class="col-sm-3 col-md-3 col-xs-12 py-5">
+      <div class="card">
+        <div class="card-header"> Crypto Spot Quote</div>
+        <div class="card-body">
+          <hr>
+          {% if data %}
+          <div class="alert alert-success text-center" role="alert">
+            <span>{{data.symbol}} @ {{data.price}}</span>
+          </div>
+          {% else %}
+          <br>
+          {% endif %}
+          <hr>
+
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-success">Quick Info</li>
+            <li class="list-group-item list-group-item-success">High: {{moredata.highPrice}} </li>
+            <li class="list-group-item list-group-item-success">Low: {{moredata.lowPrice}}</li>
+            <li class="list-group-item list-group-item-success">Volume: {{moredata.volume}} </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 col-md-9 col-xs-12 py-5">
+      <div class="card text-center">
+        <div class="alert alert-success" role="alert">
+          <div>{{ title }}</div>
+          <span>{{data.symbol}}</span>
+        </div>
+        <div>
+            {{ plot | safe }}
+        </div>
+        <br>
+        <br>
+<!--        <div id="bbands" class="card mx-auto py-3"></div>-->
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<script>
+        var candle_data = {{ candle_data | safe }};
+
+        var hband = {{ hband | safe }};
+        var mavg = {{ mavg | safe }};
+        var lband = {{ lband | safe }};
+        var time = {{ time | safe }};
+        var buy_price = {{ buy_price | safe }};
+        var sell_price = {{ sell_price | safe }};
+        var buy_price_x = {{ buy_price_x | safe }};
+        var sell_price_x = {{ sell_price_x | safe }};
+
+        var chart = LightweightCharts.createChart(document.getElementById('bbands'), {
+        width: 1000,
+        height: 500,
+        layout: {
+            backgroundColor: '#ffffff',
+            textColor: 'rgba(0, 0, 0)',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        priceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    });
+
+    var candleSeries = chart.addCandlestickSeries({
+        upColor: '#00ff00',
+        downColor: '#ff0000',
+        borderDownColor: 'rgba(255, 144, 0, 1)',
+        borderUpColor: 'rgba(255, 144, 0, 1)',
+        wickDownColor: 'rgba(255, 144, 0, 1)',
+        wickUpColor: 'rgba(255, 144, 0, 1)',
+    });
+
+    candleSeries.setData(candle_data);
+
+
+    var hbandlineSeries = chart.addLineSeries({
+      color: '#ff0000',
+    });
+
+    var hbandlist = [];
+    for (var i = 0; i < hband.length; i++) {
+        var hbands = hband[i];
+        hbandlist.push({ time: time[i], value: hbands });
+    }
+    console.log(hbandlist);
+    hbandlineSeries.setData(hbandlist);
+
+    var mavglineSeries = chart.addLineSeries({
+        color: '#00ff00',
+    });
+
+    var mavglist = [];
+    for (var i = 0; i < mavg.length; i++) {
+        var mavgs = mavg[i];
+        mavglist.push({ time: time[i], value: mavgs });
+    }
+    console.log(mavglist);
+    mavglineSeries.setData(mavglist);
+
+
+    var lbandlineSeries = chart.addLineSeries({
+        color: '#0000ff',
+    });
+
+    var lbandlist = [];
+    for (var i = 0; i < lband.length; i++) {
+        var lbands = lband[i];
+        lbandlist.push({ time: time[i], value: lbands });
+    }
+    console.log(lbandlist);
+    lbandlineSeries.setData(lbandlist);
+
+    console.log(buy_price_x);
+    console.log(sell_price_x);
+
+    markersList = [];
+    for (var i = 0; i < buy_price.length; i++) {
+        markersList.push({ time: time[buy_price_x[i]], position: 'belowBar', color: 'green', shape: 'arrowUp', text: 'buy', size: 2,});
+    }
+    candleSeries.setMarkers(markersList);
+
+    sellMarkersList = [];
+    for (var i = 0; i < sell_price.length; i++) {
+        markersList.push({ time: time[sell_price_x[i]], position: 'aboveBar', color: 'red', shape: 'arrowDown', text: 'sell', size: 2,});
+    }
+    candleSeries.setMarkers(markersList);
+    </script>
+{%endblock%}
