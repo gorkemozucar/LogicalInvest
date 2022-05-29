@@ -1,10 +1,202 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'indicators/index.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}{{data.symbol}} {{data.price}}{% endblock %}
+
+
+
+
+{% block content %}
+
+{% include 'indicators/topcrypto.html'%}
+
+
+<div class="container-fluid">
+
+  <div class="row mb-5 justify-content-center">
+    <div class="col-sm-3 col-md-3 col-xs-12 py-5">
+      <div class="card">
+        <div class="card-header"> Crypto Spot Quote</div>
+        <div class="card-body">
+          <hr>
+          {% if data %}
+          <div class="alert alert-success text-center" role="alert">
+            <span>{{data.symbol}} @ {{data.price}}</span>
+          </div>
+          {% else %}
+          <br>
+          {% endif %}
+          <hr>
+
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-success">Quick Info</li>
+            <li class="list-group-item list-group-item-success">High: {{moredata.highPrice}} </li>
+            <li class="list-group-item list-group-item-success">Low: {{moredata.lowPrice}}</li>
+            <li class="list-group-item list-group-item-success">Volume: {{moredata.volume}} </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 col-md-9 col-xs-12 py-5">
+      <div class="card text-center">
+        <div class="alert alert-success" role="alert">
+          <div>{{ title }}</div>
+          <span>{{data.symbol}}</span>
+        </div>
+        <div>
+            {{ plot | safe }}
+        </div>
+        <div class="card py-3 mb-5 mx-5">
+          <span id="candle"></span>
+          <span id="rsi"></span>
+        </div>
+
+        <div class="card py-3 mb-5 mx-5">
+          <div class="card-body">
+            <h5 class="card-title">What is {{ title }}?</h5>
+            <p class="card-text">{{ info }}</p>
+            <p class="card-text">{{ info2 }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<script>
+        var candle_data = {{ candle_data | safe }};
+
+        var time = {{ time | safe }};
+        var rsi = {{ rsi | safe }};
+        var buy_price_x = {{ buy_price_x | safe }};
+        var sell_price_x = {{ sell_price_x | safe }};
+
+        var chart = LightweightCharts.createChart(document.getElementById('rsi'), {
+        width: 1000,
+        height: 250,
+        layout: {
+            backgroundColor: '#ffffff',
+            textColor: 'rgba(0, 0, 0)',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        priceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    });
+
+
+
+    var rsiSeries = chart.addLineSeries({
+      color: '#ff0000',
+      lineWidth: 1,
+    });
+
+    var rsilist = [];
+    for (var i = 0; i < rsi.length; i++) {
+        var rsis = rsi[i];
+        rsilist.push({ time: time[i], value: rsis });
+    }
+    console.log(rsilist);
+    rsiSeries.setData(rsilist);
+
+    console.log(buy_price_x);
+    console.log(sell_price_x);
+
+
+    var linelist = [];
+    for (var i = 0; i < time.length; i++) {
+        linelist.push({ time: time[i], value: 70 });
+    }
+    var lineSeries = chart.addLineSeries({
+      lineWidth: 1,
+      lineStyle: 3,
+      lineType: 1,
+      });
+    lineSeries.setData(linelist);
+
+    var belowlinelist = [];
+    for (var i = 0; i < time.length; i++) {
+        belowlinelist.push({ time: time[i], value: 30 });
+    }
+    var belowlineSeries = chart.addLineSeries({
+      lineWidth: 1,
+      lineStyle: 3,
+      lineType: 1,
+      });
+    belowlineSeries.setData(belowlinelist);
+
+
+    var candleChart = LightweightCharts.createChart(document.getElementById('candle'), {
+        width: 1000,
+        height: 500,
+        layout: {
+            backgroundColor: '#ffffff',
+            textColor: 'rgba(0, 0, 0)',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        priceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    });
+
+    var candleSeries = candleChart.addCandlestickSeries({
+        upColor: '#00ff00',
+        downColor: '#ff0000',
+        borderDownColor: 'rgba(255, 144, 0, 1)',
+        borderUpColor: 'rgba(255, 144, 0, 1)',
+        wickDownColor: 'rgba(255, 144, 0, 1)',
+        wickUpColor: 'rgba(255, 144, 0, 1)',
+    });
+
+    candleSeries.setData(candle_data);
+
+    markersList = [];
+    for (var i = 0; i < buy_price_x.length; i++) {
+        markersList.push({ time: time[buy_price_x[i]], position: 'belowBar', color: 'green', shape: 'arrowUp', text: 'buy', size: 2,});
+    }
+    candleSeries.setMarkers(markersList);
+
+    sellMarkersList = [];
+    for (var i = 0; i < sell_price_x.length; i++) {
+        markersList.push({ time: time[sell_price_x[i]], position: 'aboveBar', color: 'red', shape: 'arrowDown', text: 'sell', size: 2,});
+    }
+    candleSeries.setMarkers(markersList);
+
+
+    </script>
+{%endblock%}

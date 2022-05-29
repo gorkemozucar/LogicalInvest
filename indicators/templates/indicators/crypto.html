@@ -14,7 +14,7 @@
           <div class="card-body">
             <form method="POST" action="">{% csrf_token %}
             <div class="input-group" style="display: inline">
-                <label>For </label>
+                <label style="font-size: large">For </label>
 
               <select id="interval" name="interval">
                 <option value="1m">1 minute</option>
@@ -34,9 +34,9 @@
                 <option value="1M">1 month</option>
               </select>
 
-                <label> interval, calculate the accuracy starting from </label>
+                <label style="font-size: large"> interval, calculate the accuracy starting from </label>
 
-              <select name="starting_time">
+              <select id="startingTime" name="starting_time">
                   <option value="48">2 days ago</option>
                   <option value="120">5 days ago</option>
                   <option value="2160">3 months ago</option>
@@ -91,9 +91,7 @@
         </div>
         <br>
         <br>
-<!--        <div id="chart" class="card mx-auto py-3"></div>-->
-        <br>
-        <br>
+<!--        <div id="chart" class="card mb-5 mx-5 py-3"></div>-->
         <div class="card text-center mb-5 mx-5">
         <h3 class="my-3">Indicators and Accuracies</h3>
           <div class="table-responsive">
@@ -293,10 +291,27 @@
 </script>
 
 <script>
-  function myrefresh() {
-    window.location.reload();
-  }
-  setTimeout('myrefresh()', 59000);
+  window.onload = function() {
+    var interval = sessionStorage.getItem('interval');
+    if (interval !== null) $('#interval').val(interval);
+
+    var startingTime = sessionStorage.getItem('startingTime');
+    if (startingTime !== null) $('#startingTime').val(startingTime);
+
+
+    }
+
+     window.onbeforeunload = function() {
+        sessionStorage.setItem("interval", $('#interval').val());
+        sessionStorage.setItem("startingTime", $('#startingTime').val());
+    }
 </script>
+
+<!--<script>-->
+<!--  function myrefresh() {-->
+<!--    window.location.reload();-->
+<!--  }-->
+<!--  setTimeout('myrefresh()', 59000);-->
+<!--</script>-->
 
 {%endblock%}

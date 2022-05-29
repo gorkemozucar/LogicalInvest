@@ -23,6 +23,7 @@ API_SECRET = 'yourbinanceapisecret'
 # API_KEY = 'jgd9xxpVqENptW4Ggk2y4IlKqkfU3FD7wSLFWjXlcix2thxRnLsJhAo38AwTdYJv'
 # API_SECRET = 'LKLHyXmU81wsIt42tWrxpL39bJd86GcJcT25McExZxwIG7kbZFjUOXApdIQHgcJy'
 
+# bu fonksiyonun adını get_historical_data olarak değiştir
 def gather_data(interval, start_n_hours_ago):
     client = Client(API_KEY, API_SECRET)
     # client = Client(indicators.config.API_KEY, indicators.config.API_SECRET, tld='us')
@@ -367,7 +368,7 @@ def plot_rsi(df):
 
     signal = get_signal(df, rsi_buy_x, rsi_sell_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['rsi'], rsi_buy_x, rsi_sell_x
 
 
 def plot_supertrend(df):
