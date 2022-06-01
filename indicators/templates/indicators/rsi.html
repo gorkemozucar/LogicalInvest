@@ -45,9 +45,9 @@
           <div>{{ title }}</div>
           <span>{{data.symbol}}</span>
         </div>
-        <div>
-            {{ plot | safe }}
-        </div>
+<!--        <div>-->
+<!--            {{ plot | safe }}-->
+<!--        </div>-->
         <div class="card py-3 mb-5 mx-5">
           <span id="candle"></span>
           <span id="rsi"></span>
@@ -58,6 +58,10 @@
             <h5 class="card-title">What is {{ title }}?</h5>
             <p class="card-text">{{ info }}</p>
             <p class="card-text">{{ info2 }}</p>
+            <p class="card-text">{{ info3 }}</p>
+            <p class="card-text">{{ info4 }}</p>
+            <p class="card-text">{{ info5 }}</p>
+            <p class="card-text">{{ info6 }}</p>
           </div>
         </div>
 
@@ -184,6 +188,27 @@
     });
 
     candleSeries.setData(candle_data);
+
+    var selectedValue = "{{ interval | safe }}"
+
+    var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_"+selectedValue);
+    console.log(binanceSocket);
+
+    binanceSocket.onmessage = function (event) {
+        var message = JSON.parse(event.data);
+
+        var candlestick = message.k;
+
+        candleSeries.update({
+            time: (candlestick.t / 1000) + 10800,
+            open: candlestick.o,
+            high: candlestick.h,
+            low: candlestick.l,
+            close: candlestick.c
+        })
+    }
+
+
 
     markersList = [];
     for (var i = 0; i < buy_price_x.length; i++) {

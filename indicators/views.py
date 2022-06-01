@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 
+
 #most dependencies and imports made in functions.py to avoid clutter
 from .functions import *
 from binance.client import Client
@@ -207,8 +208,10 @@ def candlestick(request):
     client = Client(API_KEY, API_SECRET)
 
     if request.method == 'POST':
+        global interval
         interval = request.POST.get('interval')
         print(interval)
+        global start_time
         start_time = int(request.POST.get('starting_time'))
     else:
         interval = client.KLINE_INTERVAL_1MINUTE
@@ -237,19 +240,19 @@ def candlestick(request):
 
     plot_bb, bb_accuracy, bb_signal, bb_hband, bb_mavg, bb_lband, buy_price, sell_price, buy_price_x, sell_price_x = plt.plot_bbands(df)
     plot_rsi, rsi_accuracy, rsi_signal, rsi, rsi_buy_x, rsi_sell_x = plt.plot_rsi(df)
-    plot_supertrend, supertrend_accuracy, supertrend_signal = plt.plot_supertrend(df)
-    plot_macd, macd_accuracy, macd_signal = plt.plot_macd(df)
-    plot_williams_r, williams_r_accuracy, williams_r_signal = plt.plot_williams_r_percentage(df)
-    plot_sma, sma_accuracy, sma_signal = plt.plot_sma(df)
-    plot_stoch, stoch_accuracy, stoch_signal = plt.plot_stochastic(df)
-    plot_cci, cci_accuracy, cci_signal = plt.plot_cci(df)
-    plot_adx, adx_accuracy, adx_signal = plt.plot_adx(df)
-    plot_aroon, aroon_accuracy, aroon_signal = plt.plot_aroon(df)
-    plot_kc, kc_accuracy, kc_signal = plt.plot_kc(df)
-    plot_tsi, tsi_accuracy, tsi_signal = plt.plot_tsi(df)
-    plot_ao, ao_accuracy, ao_signal = plt.plot_ao(df)
-    plot_coppock, coppock_accuracy, coppock_signal = plt.plot_coppock(df)
-    plot_kst, kst_accuracy, kst_signal = plt.plot_kst(df)
+    plot_supertrend, supertrend_accuracy, supertrend_signal, supertrend, supertrendl, buy_price_x, sell_price_x = plt.plot_supertrend(df)
+    plot_macd, macd_accuracy, macd_signal, macd_diff, macd, macdSignal, macd_buy_x, macd_sell_x = plt.plot_macd(df)
+    plot_williams_r, williams_r_accuracy, williams_r_signal, williams_r, williams_r_buy_x, williams_r_sell_x = plt.plot_williams_r_percentage(df)
+    plot_sma, sma_accuracy, sma_signal, sma_20, sma_50, buy_price_x, sell_price_x = plt.plot_sma(df)
+    plot_stoch, stoch_accuracy, stoch_signal, stoch_k, stoch_d, buy_price_x, sell_price_x = plt.plot_stochastic(df)
+    plot_cci, cci_accuracy, cci_signal, cci, buy_price_x, sell_price_x = plt.plot_cci(df)
+    plot_adx, adx_accuracy, adx_signal, adx, adx_pos, adx_neg, buy_price_x, sell_price_x = plt.plot_adx(df)
+    plot_aroon, aroon_accuracy, aroon_signal, aroon_up, aroon_down, buy_price_x, sell_price_x = plt.plot_aroon(df)
+    plot_kc, kc_accuracy, kc_signal, kc_high, kc_middle, kc_low, buy_price_x, sell_price_x = plt.plot_kc(df)
+    plot_tsi, tsi_accuracy, tsi_signal, tsi, tsiSignal, buy_price_x, sell_price_x = plt.plot_tsi(df)
+    plot_ao, ao_accuracy, ao_signal, ao, buy_price_x, sell_price_x = plt.plot_ao(df)
+    plot_coppock, coppock_accuracy, coppock_signal, coppock, buy_price_x, sell_price_x = plt.plot_coppock(df)
+    plot_kst, kst_accuracy, kst_signal, kst, kstSignal, buy_price_x, sell_price_x = plt.plot_kst(df)
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -274,6 +277,7 @@ def candlestick(request):
         'sellers': sellers,
         'data': data,
         'candle_data': history(interval, start_time),
+        'interval': interval,
 
             'title': 'BTCUSDT Candlestick Chart',
                'plot': plot_candlestick,
@@ -345,23 +349,7 @@ def candlestick(request):
 
 
 def bbands(request):
-    API_KEY = 'yourbinanceapikey'
-    API_SECRET = 'yourbinanceapisecret'
 
-    client = Client(API_KEY, API_SECRET)
-
-    if request.method == 'POST':
-        interval = request.POST.get('interval')
-        print(interval)
-        start_time = int(request.POST.get('starting_time'))
-    else:
-        interval = client.KLINE_INTERVAL_1MINUTE
-        start_time = 48
-
-
-
-
-    # df = request.session.get('df')
     plot_bb, bb_accuracy, bb_signal, bb_hband, bb_mavg, bb_lband, buy_price, sell_price, buy_price_x, sell_price_x = plt.plot_bbands(df)
 
     time = df["time"].tolist()
@@ -398,6 +386,7 @@ def bbands(request):
                'info2': info2,
 
                'candle_data': history(interval, start_time),
+               'interval': interval,
 
                'time': time,
                'hband': new_hband_list,
@@ -421,20 +410,6 @@ def bbands(request):
 
 
 def rsi(request):
-    API_KEY = 'yourbinanceapikey'
-    API_SECRET = 'yourbinanceapisecret'
-
-    client = Client(API_KEY, API_SECRET)
-
-    if request.method == 'POST':
-        interval = request.POST.get('interval')
-        print(interval)
-        start_time = int(request.POST.get('starting_time'))
-    else:
-        interval = client.KLINE_INTERVAL_1MINUTE
-        start_time = 48
-
-
 
     plot_rsi, rsi_accuracy, rsi_signal, rsi_plot, rsi_buy_x, rsi_sell_x = plt.plot_rsi(df)
 
@@ -466,6 +441,7 @@ def rsi(request):
                # 'info2': info2,
 
                'candle_data': history(interval, start_time),
+               'interval': interval,
 
                'time': time,
                'rsi': new_rsi_list,
@@ -481,11 +457,22 @@ def rsi(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/rsi.html', context)
 
 
 def supertrend(request):
-    plot_supertrend, supertrend_accuracy, supertrend_signal = plt.plot_supertrend(df)
+
+    plot_supertrend, supertrend_accuracy, supertrend_signal, supertrend, supertrendl, buy_price_x, sell_price_x = plt.plot_supertrend(df)
+
+    time = df["time"].tolist()
+
+    supertrend_list = supertrend.tolist()
+    new_supertrend_list = [x for x in supertrend_list if math.isnan(x) == False]
+
+    supertrendl_list = supertrendl.tolist()
+    new_supertrendl_list = [x for x in supertrendl_list if math.isnan(x) == False]
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -509,6 +496,15 @@ def supertrend(request):
                'info2': info2,
                'info3': info3,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'supertrend': new_supertrend_list,
+               'supertrendl': new_supertrendl_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -518,11 +514,26 @@ def supertrend(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/supertrend.html', context)
 
 
 def macd(request):
-    plot_macd, macd_accuracy, macd_signal = plt.plot_macd(df)
+
+    plot_macd, macd_accuracy, macd_signal, macd_diff, macd, macdSignal, macd_buy_x, macd_sell_x = plt.plot_macd(df)
+
+    time = df["time"].tolist()
+
+    macd_diff_list = macd_diff.tolist()
+    new_macd_diff_list = [x for x in macd_diff_list if math.isnan(x) == False]
+
+    macd_list = macd.tolist()
+    new_macd_list = [x for x in macd_list if math.isnan(x) == False]
+
+    macd_signal_list = macdSignal.tolist()
+    new_macd_signal_list = [x for x in macd_signal_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -550,6 +561,16 @@ def macd(request):
                'info4': info4,
                'info5': info5,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'macdDiff': new_macd_diff_list,
+               'macd': new_macd_list,
+               'macdSignal': new_macd_signal_list,
+               'buy_price_x': macd_buy_x,
+               'sell_price_x': macd_sell_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -559,11 +580,20 @@ def macd(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/macd.html', context)
 
 
 def williams_r_percentage(request):
-    plot_williams_r, williams_r_accuracy, williams_r_signal = plt.plot_williams_r_percentage(df)
+
+    plot_williams_r, williams_r_accuracy, williams_r_signal, williams_r, williams_r_buy_x, williams_r_sell_x = plt.plot_williams_r_percentage(
+        df)
+
+    time = df["time"].tolist()
+
+    williams_r_list = williams_r.tolist()
+    new_williams_r_list = [x for x in williams_r_list if math.isnan(x) == False]
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -585,6 +615,14 @@ def williams_r_percentage(request):
                'info': info,
                'info2': info2,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'williamsR': new_williams_r_list,
+               'buy_price_x': williams_r_buy_x,
+               'sell_price_x': williams_r_sell_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -594,11 +632,23 @@ def williams_r_percentage(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/williams_r.html', context)
 
 
 def sma(request):
-    plot_sma, sma_accuracy, sma_signal = plt.plot_sma(df)
+
+    plot_sma, sma_accuracy, sma_signal, sma_20, sma_50, buy_price_x, sell_price_x = plt.plot_sma(df)
+
+    time = df["time"].tolist()
+
+    sma_20_list = sma_20.tolist()
+    new_sma_20_list = [x for x in sma_20_list if math.isnan(x) == False]
+
+    sma_50_list = sma_50.tolist()
+    new_sma_50_list = [x for x in sma_50_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -618,6 +668,15 @@ def sma(request):
                'plot': plot_sma,
                'info': info,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'smatwenty': new_sma_20_list,
+               'smafifty': new_sma_50_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -627,11 +686,22 @@ def sma(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/sma.html', context)
 
 
 def stochastic(request):
-    plot_stoch, stoch_accuracy, stoch_signal = plt.plot_stochastic(df)
+
+    plot_stoch, stoch_accuracy, stoch_signal, stoch_k, stoch_d, buy_price_x, sell_price_x = plt.plot_stochastic(df)
+
+    time = df["time"].tolist()
+
+    stoch_k_list = stoch_k.tolist()
+    new_stoch_k_list = [x for x in stoch_k_list if math.isnan(x) == False]
+
+    stoch_d_list = stoch_d.tolist()
+    new_stoch_d_list = [x for x in stoch_d_list if math.isnan(x) == False]
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -657,6 +727,15 @@ def stochastic(request):
                'info3': info3,
                'info4': info4,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'stochk': new_stoch_k_list,
+               'stochd': new_stoch_d_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -666,11 +745,20 @@ def stochastic(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/stochastic.html', context)
 
 
 def cci(request):
-    plot_cci, cci_accuracy, cci_signal = plt.plot_cci(df)
+
+    plot_cci, cci_accuracy, cci_signal, cci, buy_price_x, sell_price_x = plt.plot_cci(df)
+
+    time = df["time"].tolist()
+
+    cci_list = cci.tolist()
+    new_cci_list = [x for x in cci_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -692,6 +780,14 @@ def cci(request):
                'info': info,
                'info2': info2,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'cci': new_cci_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -701,11 +797,25 @@ def cci(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/cci.html', context)
 
 
 def adx(request):
-    plot_adx, adx_accuracy, adx_signal = plt.plot_adx(df)
+
+    plot_adx, adx_accuracy, adx_signal, adx, adx_pos, adx_neg, buy_price_x, sell_price_x = plt.plot_adx(df)
+
+    time = df["time"].tolist()
+
+    adx_list = adx.tolist()
+    new_adx_list = [x for x in adx_list if math.isnan(x) == False]
+
+    adx_pos_list = adx_pos.tolist()
+    new_adx_pos_list = [x for x in adx_pos_list if math.isnan(x) == False]
+
+    adx_neg_list = adx_neg.tolist()
+    new_adx_neg_list = [x for x in adx_neg_list if math.isnan(x) == False]
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -729,6 +839,16 @@ def adx(request):
                'info2': info2,
                'info3': info3,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'adx': new_adx_list,
+               'adxpos': new_adx_pos_list,
+               'adxneg': new_adx_neg_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -738,11 +858,24 @@ def adx(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/adx.html', context)
 
 
 def aroon(request):
-    plot_aroon, aroon_accuracy, aroon_signal = plt.plot_aroon(df)
+
+    plot_aroon, aroon_accuracy, aroon_signal, aroon_up, aroon_down, buy_price_x, sell_price_x = plt.plot_aroon(df)
+
+    time = df["time"].tolist()
+
+    aroon_up_list = aroon_up.tolist()
+    new_aroon_up_list = [x for x in aroon_up_list if math.isnan(x) == False]
+
+    aroon_down_list = aroon_down.tolist()
+    new_aroon_down_list = [x for x in aroon_down_list if math.isnan(x) == False]
+
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -766,6 +899,15 @@ def aroon(request):
                'info2': info2,
                'info3': info3,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'aroonup': new_aroon_up_list,
+               'aroondown': new_aroon_down_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -775,11 +917,26 @@ def aroon(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/aroon.html', context)
 
 
 def kc(request):
-    plot_kc, kc_accuracy, kc_signal = plt.plot_kc(df)
+
+    plot_kc, kc_accuracy, kc_signal, kc_high, kc_middle, kc_low, buy_price_x, sell_price_x = plt.plot_kc(df)
+
+    time = df["time"].tolist()
+
+    kc_high_list = kc_high.tolist()
+    new_kc_high_list = [x for x in kc_high_list if math.isnan(x) == False]
+
+    kc_middle_list = kc_middle.tolist()
+    new_kc_middle_list = [x for x in kc_middle_list if math.isnan(x) == False]
+
+    kc_low_list = kc_low.tolist()
+    new_kc_low_list = [x for x in kc_low_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -809,6 +966,16 @@ def kc(request):
                'info5': info5,
                'info6': info6,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'kchigh': new_kc_high_list,
+               'kcmiddle': new_kc_middle_list,
+               'kclow': new_kc_low_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -818,11 +985,23 @@ def kc(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/kc.html', context)
 
 
 def tsi(request):
-    plot_tsi, tsi_accuracy, tsi_signal = plt.plot_tsi(df)
+
+    plot_tsi, tsi_accuracy, tsi_signal, tsi, tsiSignal, buy_price_x, sell_price_x = plt.plot_tsi(df)
+
+    time = df["time"].tolist()
+
+    tsi_list = tsi.tolist()
+    new_tsi_list = [x for x in tsi_list if math.isnan(x) == False]
+
+    tsi_signal_list = tsiSignal.tolist()
+    new_tsi_signal_list = [x for x in tsi_signal_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -850,6 +1029,15 @@ def tsi(request):
                'info4': info4,
                'info5': info5,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'tsi': new_tsi_list,
+               'tsisignal': new_tsi_signal_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -859,11 +1047,20 @@ def tsi(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/tsi.html', context)
 
 
 def ao(request):
-    plot_ao, ao_accuracy, ao_signal = plt.plot_ao(df)
+
+    plot_ao, ao_accuracy, ao_signal, ao, buy_price_x, sell_price_x = plt.plot_ao(df)
+
+    time = df["time"].tolist()
+
+    ao_list = ao.tolist()
+    new_ao_list = [x for x in ao_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -885,6 +1082,14 @@ def ao(request):
                'info': info,
                'info2': info2,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'ao': new_ao_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -894,11 +1099,21 @@ def ao(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/ao.html', context)
 
 
 def coppock(request):
-    plot_coppock, coppock_accuracy, coppock_signal = plt.plot_coppock(df)
+
+    plot_coppock, coppock_accuracy, coppock_signal, coppock, buy_price_x, sell_price_x = plt.plot_coppock(df)
+
+    time = df["time"].tolist()
+
+    coppock_list = coppock.tolist()
+    new_coppock_list = [x for x in coppock_list if math.isnan(x) == False]
+
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -926,6 +1141,14 @@ def coppock(request):
                'info4': info4,
                'info5': info5,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'coppock': new_coppock_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -935,11 +1158,23 @@ def coppock(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/coppock.html', context)
 
 
 def kst(request):
-    plot_kst, kst_accuracy, kst_signal = plt.plot_kst(df)
+
+    plot_kst, kst_accuracy, kst_signal, kst, kstSignal, buy_price_x, sell_price_x = plt.plot_kst(df)
+
+    time = df["time"].tolist()
+
+    kst_list = kst.tolist()
+    new_kst_list = [x for x in kst_list if math.isnan(x) == False]
+
+    kst_signal_list = kstSignal.tolist()
+    new_kst_signal_list = [x for x in kst_signal_list if math.isnan(x) == False]
+
+
+
 
     symbol = 'BTCUSD'
     data = spotquote(symbol)
@@ -967,6 +1202,15 @@ def kst(request):
                'info4': info4,
                'info5': info5,
 
+               'candle_data': history(interval, start_time),
+               'interval': interval,
+
+               'time': time,
+               'kst': new_kst_list,
+               'kst_signal': new_kst_signal_list,
+               'buy_price_x': buy_price_x,
+               'sell_price_x': sell_price_x,
+
                'moredata': moredata,
                'eth': eth,
                'btc': btc,
@@ -976,7 +1220,7 @@ def kst(request):
                'sellers': sellers,
                'data': data,
                }
-    return render(request, 'indicators/bbands.html', context)
+    return render(request, 'indicators/kst.html', context)
 
 
 def history(interval, start_n_hours_ago):
@@ -991,7 +1235,7 @@ def history(interval, start_n_hours_ago):
 
     for data in candlesticks:
         candlestick = {
-            "time": data[0] / 1000,  # open time
+            "time": (data[0] / 1000) + 10800,  # open time
             # "time": datetime.fromtimestamp(data[0] / 1000, tz=tzinfo.tzname("Turkey")).strftime('%Y-%m-%d %H:%M:%S'),  # open time
             # "time": datetime.fromtimestamp(data[0] / 1000).strftime('%Y-%m-%d %H:%M:%S'),  # open time
             "open": int(float(data[1])),

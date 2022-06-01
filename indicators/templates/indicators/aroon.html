@@ -1,10 +1,220 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'indicators/index.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}{{data.symbol}} {{data.price}}{% endblock %}
+
+
+
+
+{% block content %}
+
+{% include 'indicators/topcrypto.html'%}
+
+
+<div class="container-fluid">
+
+  <div class="row mb-5 justify-content-center">
+    <div class="col-sm-3 col-md-3 col-xs-12 py-5">
+      <div class="card">
+        <div class="card-header"> Crypto Spot Quote</div>
+        <div class="card-body">
+          <hr>
+          {% if data %}
+          <div class="alert alert-success text-center" role="alert">
+            <span>{{data.symbol}} @ {{data.price}}</span>
+          </div>
+          {% else %}
+          <br>
+          {% endif %}
+          <hr>
+
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-success">Quick Info</li>
+            <li class="list-group-item list-group-item-success">High: {{moredata.highPrice}} </li>
+            <li class="list-group-item list-group-item-success">Low: {{moredata.lowPrice}}</li>
+            <li class="list-group-item list-group-item-success">Volume: {{moredata.volume}} </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 col-md-9 col-xs-12 py-5">
+      <div class="card text-center">
+        <div class="alert alert-success" role="alert">
+          <div>{{ title }}</div>
+          <span>{{data.symbol}}</span>
+        </div>
+<!--        <div>-->
+<!--            {{ plot | safe }}-->
+<!--        </div>-->
+        <div class="card py-3 mb-5 mx-5">
+          <span id="candle"></span>
+          <span id="aroon"></span>
+        </div>
+
+        <div class="card py-3 mb-5 mx-5">
+          <div class="card-body">
+            <h5 class="card-title">What is {{ title }}?</h5>
+            <p class="card-text">{{ info }}</p>
+            <p class="card-text">{{ info2 }}</p>
+            <p class="card-text">{{ info3 }}</p>
+            <p class="card-text">{{ info4 }}</p>
+            <p class="card-text">{{ info5 }}</p>
+            <p class="card-text">{{ info6 }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<script>
+        var candle_data = {{ candle_data | safe }};
+
+        var time = {{ time | safe }};
+        var aroonup = {{ aroonup | safe }};
+        var aroondown = {{ aroondown | safe }};
+        var buy_price_x = {{ buy_price_x | safe }};
+        var sell_price_x = {{ sell_price_x | safe }};
+
+        var chart = LightweightCharts.createChart(document.getElementById('aroon'), {
+        width: 1000,
+        height: 250,
+        layout: {
+            backgroundColor: '#ffffff',
+            textColor: 'rgba(0, 0, 0)',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        priceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    });
+
+
+
+    var aroonupSeries = chart.addLineSeries({
+      color: '#00ff00',
+      lineWidth: 1,
+    });
+
+    var aroonuplist = [];
+    for (var i = 0; i < aroonup.length; i++) {
+        var aroonups = aroonup[i];
+        aroonuplist.push({ time: time[i], value: aroonups });
+    }
+    console.log(aroonuplist);
+    aroonupSeries.setData(aroonuplist);
+
+
+    var aroondownSeries = chart.addLineSeries({
+      color: '#ff0000',
+      lineWidth: 1,
+    });
+
+    var aroondownlist = [];
+    for (var i = 0; i < aroondown.length; i++) {
+        var aroondowns = aroondown[i];
+        aroondownlist.push({ time: time[i], value: aroondowns });
+    }
+    console.log(aroondownlist);
+    aroondownSeries.setData(aroondownlist);
+
+    console.log(buy_price_x);
+    console.log(sell_price_x);
+
+
+
+    var candleChart = LightweightCharts.createChart(document.getElementById('candle'), {
+        width: 1000,
+        height: 500,
+        layout: {
+            backgroundColor: '#ffffff',
+            textColor: 'rgba(0, 0, 0)',
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        priceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    });
+
+    var candleSeries = candleChart.addCandlestickSeries({
+        upColor: '#00ff00',
+        downColor: '#ff0000',
+        borderDownColor: 'rgba(255, 144, 0, 1)',
+        borderUpColor: 'rgba(255, 144, 0, 1)',
+        wickDownColor: 'rgba(255, 144, 0, 1)',
+        wickUpColor: 'rgba(255, 144, 0, 1)',
+    });
+
+    candleSeries.setData(candle_data);
+
+    var selectedValue = "{{ interval | safe }}"
+
+    var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_"+selectedValue);
+    console.log(binanceSocket);
+
+    binanceSocket.onmessage = function (event) {
+        var message = JSON.parse(event.data);
+
+        var candlestick = message.k;
+
+        candleSeries.update({
+            time: (candlestick.t / 1000) + 10800,
+            open: candlestick.o,
+            high: candlestick.h,
+            low: candlestick.l,
+            close: candlestick.c
+        })
+    }
+
+
+
+    markersList = [];
+    for (var i = 0; i < buy_price_x.length; i++) {
+        markersList.push({ time: time[buy_price_x[i]], position: 'belowBar', color: 'green', shape: 'arrowUp', text: 'buy', size: 2,});
+    }
+    candleSeries.setMarkers(markersList);
+
+    sellMarkersList = [];
+    for (var i = 0; i < sell_price_x.length; i++) {
+        markersList.push({ time: time[sell_price_x[i]], position: 'aboveBar', color: 'red', shape: 'arrowDown', text: 'sell', size: 2,});
+    }
+    candleSeries.setMarkers(markersList);
+
+
+    </script>
+{%endblock%}

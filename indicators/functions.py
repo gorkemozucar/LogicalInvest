@@ -1,11 +1,11 @@
-import requests
-import pandas as pd
+# import requests
+# import pandas as pd
 import json
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.offline import plot
-from alpha_vantage.techindicators import TechIndicators
-from alpha_vantage.timeseries import TimeSeries
+# from alpha_vantage.techindicators import TechIndicators
+# from alpha_vantage.timeseries import TimeSeries
 import datetime
 import time
 from pandas import Timestamp

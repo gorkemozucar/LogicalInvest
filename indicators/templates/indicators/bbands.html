@@ -45,10 +45,10 @@
           <div>{{ title }}</div>
           <span>{{data.symbol}}</span>
         </div>
-        <div>
-            {{ plot | safe }}
-        </div>
-<!--        <div id="bbands" class="card py-3 mb-5 mx-5"></div>-->
+<!--        <div>-->
+<!--            {{ plot | safe }}-->
+<!--        </div>-->
+        <div id="bbands" class="card py-3 mb-5 mx-5"></div>
 
         <div class="card py-3 mb-5 mx-5">
           <div class="card-body">
@@ -119,6 +119,28 @@
     });
 
     candleSeries.setData(candle_data);
+
+    var selectedValue = "{{ interval | safe }}"
+
+    var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_"+selectedValue);
+    console.log(binanceSocket);
+
+    binanceSocket.onmessage = function (event) {
+        var message = JSON.parse(event.data);
+
+        var candlestick = message.k;
+
+        candleSeries.update({
+            time: (candlestick.t / 1000) + 10800,
+            open: candlestick.o,
+            high: candlestick.h,
+            low: candlestick.l,
+            close: candlestick.c
+        })
+    }
+
+
+
 
 
     var hbandlineSeries = chart.addLineSeries({

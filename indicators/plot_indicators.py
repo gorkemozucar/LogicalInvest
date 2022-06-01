@@ -11,8 +11,6 @@ from ta.volatility import BollingerBands, KeltnerChannel
 
 import pandas_ta
 # import indicators.config
-from matplotlib.animation import FuncAnimation
-from plotly.offline import plot
 # from indicators.real_time_data import df
 import pandas as pd
 from datetime import datetime, timedelta, tzinfo
@@ -20,8 +18,6 @@ from datetime import datetime, timedelta, tzinfo
 API_KEY = 'yourbinanceapikey'
 API_SECRET = 'yourbinanceapisecret'
 
-# API_KEY = 'jgd9xxpVqENptW4Ggk2y4IlKqkfU3FD7wSLFWjXlcix2thxRnLsJhAo38AwTdYJv'
-# API_SECRET = 'LKLHyXmU81wsIt42tWrxpL39bJd86GcJcT25McExZxwIG7kbZFjUOXApdIQHgcJy'
 
 # bu fonksiyonun adını get_historical_data olarak değiştir
 def gather_data(interval, start_n_hours_ago):
@@ -49,8 +45,8 @@ def gather_data(interval, start_n_hours_ago):
 
     for data in candlesticks:
         candlestick = {
-            # "time": data[0] / 1000,  # open time
-            "time": datetime.utcfromtimestamp(data[0] / 1000).strftime('%Y-%m-%d %H:%M:%S'),  # open time
+            "time": (data[0] / 1000) + 10800,  # open time
+            # "time": datetime.utcfromtimestamp(data[0] / 1000 + 10800).strftime('%Y-%m-%d %H:%M:%S'),  # open time
             # "time": datetime.fromtimestamp(data[0] / 1000, tz=tzinfo.tzname("Turkey")).strftime('%Y-%m-%d %H:%M:%S'),  # open time
             # "time": datetime.fromtimestamp(data[0] / 1000).strftime('%Y-%m-%d %H:%M:%S'),  # open time
             "open": int(float(data[1])),
@@ -439,7 +435,7 @@ def plot_supertrend(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, supertrend['SUPERT_7_3.0'], supertrend['SUPERTl_7_3.0'], buy_price_x, sell_price_x
 
 
 def plot_macd(df):
@@ -504,7 +500,7 @@ def plot_macd(df):
 
     signal = get_signal(df, macd_buy_x, macd_sell_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, macd.macd_diff(), macd.macd(), macd.macd_signal(), macd_buy_x, macd_sell_x
 
 
 def plot_williams_r_percentage(df):
@@ -559,7 +555,7 @@ def plot_williams_r_percentage(df):
 
     signal = get_signal(df, williams_r_buy_x, williams_r_sell_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['williams_r'], williams_r_buy_x, williams_r_sell_x
 
 
 def plot_sma(df):
@@ -643,7 +639,7 @@ def plot_sma(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['sma_20'], df['sma_50'], buy_price_x, sell_price_x
 
 
 def plot_stochastic(df):
@@ -727,7 +723,7 @@ def plot_stochastic(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['stoch_k'], df['stoch_d'], buy_price_x, sell_price_x
 
 
 def plot_cci(df):
@@ -797,7 +793,7 @@ def plot_cci(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['cci'], buy_price_x, sell_price_x
 
 
 def plot_adx(df):
@@ -879,7 +875,7 @@ def plot_adx(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['adx'], df['adx_pos'], df['adx_neg'], buy_price_x, sell_price_x
 
 
 def plot_aroon(df):
@@ -953,7 +949,7 @@ def plot_aroon(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['aroon_up'], df['aroon_down'], buy_price_x, sell_price_x
 
 
 def plot_kc(df):
@@ -1041,7 +1037,7 @@ def plot_kc(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['kc_high'], df['kc_middle'], df['kc_low'], buy_price_x, sell_price_x
 
 
 def plot_tsi(df):
@@ -1112,7 +1108,7 @@ def plot_tsi(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['tsi'], df['tsi_signal'], buy_price_x, sell_price_x
 
 
 def plot_ao(df):
@@ -1183,7 +1179,7 @@ def plot_ao(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['ao'], buy_price_x, sell_price_x
 
 
 def plot_coppock(df):
@@ -1246,7 +1242,7 @@ def plot_coppock(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['coppock'], buy_price_x, sell_price_x
 
 
 def plot_kst(df):
@@ -1317,4 +1313,4 @@ def plot_kst(df):
 
     signal = get_signal(df, buy_price_x, sell_price_x)
 
-    return fig.to_html(), accuracy, signal
+    return fig.to_html(), accuracy, signal, df['kst'], df['kst_signal'], buy_price_x, sell_price_x

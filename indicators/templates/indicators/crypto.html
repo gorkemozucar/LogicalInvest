@@ -86,12 +86,12 @@
           <span>{{data.symbol}}</span>
         </div>
 
-        <div class="card mx-auto py-3">
-          {{ plot | safe }}
-        </div>
-        <br>
-        <br>
-<!--        <div id="chart" class="card mb-5 mx-5 py-3"></div>-->
+<!--        <div class="card mx-auto py-3">-->
+<!--          {{ plot | safe }}-->
+<!--        </div>-->
+<!--        <br>-->
+<!--        <br>-->
+        <div id="chart" class="card mb-5 mx-5 py-3"></div>
         <div class="card text-center mb-5 mx-5">
         <h3 class="my-3">Indicators and Accuracies</h3>
           <div class="table-responsive">
@@ -233,7 +233,11 @@
     console.log(candle_data);
     candleSeries.setData(candle_data);
 
-    var selectedValue = document.getElementById("interval").value;
+    interval.addEventListener("change", function(){
+     localStorage.setItem("interval", this.value);
+    });
+
+    var selectedValue = "{{ interval | safe }}";
 
     var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_"+selectedValue);
     console.log(binanceSocket);
@@ -244,7 +248,7 @@
         var candlestick = message.k;
 
         candleSeries.update({
-            time: candlestick.t / 1000,
+            time: (candlestick.t / 1000) + 10800,
             open: candlestick.o,
             high: candlestick.h,
             low: candlestick.l,
