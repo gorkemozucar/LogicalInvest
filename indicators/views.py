@@ -1224,8 +1224,8 @@ def kst(request):
 
 
 def history(interval, start_n_hours_ago):
-    API_KEY = 'jgd9xxpVqENptW4Ggk2y4IlKqkfU3FD7wSLFWjXlcix2thxRnLsJhAo38AwTdYJv'
-    API_SECRET = 'LKLHyXmU81wsIt42tWrxpL39bJd86GcJcT25McExZxwIG7kbZFjUOXApdIQHgcJy'
+    API_KEY = 'your_api_key'
+    API_SECRET = 'your_api_secret'
 
     client = Client(API_KEY, API_SECRET)
     candlesticks = client.get_historical_klines(symbol="BTCUSDT", interval=interval,
